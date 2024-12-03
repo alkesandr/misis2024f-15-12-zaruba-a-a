@@ -1,0 +1,3 @@
+/Users/apple/Documents/Cpp-Crypto-Arbitrage-Framework/Framework/out/build/CMakeFiles/Crypto.dir
+/Users/apple/Documents/Cpp-Crypto-Arbitrage-Framework/Framework/out/build/CMakeFiles/edit_cache.dir
+/Users/apple/Documents/Cpp-Crypto-Arbitrage-Framework/Framework/out/build/CMakeFiles/rebuild_cache.dir
