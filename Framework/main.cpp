@@ -1,3 +1,7 @@
+/**
+ * @file main.cpp
+ * @brief Основной файл программы для выполнения поиска арбитражных возможностей в криптовалютной торговле.
+ */
 #include <iostream>
 #include <chrono>
 #include <sstream>
@@ -23,33 +27,30 @@
 
 using namespace std;
 
-/*
-*
-* Struct for holding all custom user settings
-* that are generated from shell_driver.sh
-*
-*/
+/**
+ * @struct UserInput
+ * @brief Структура для хранения пользовательских настроек, полученных из файла `user_settings.txt`.
+ */
+
 struct UserInput
 {
-	int pathLen;
-	string startCoin;
-	double tradeAmt;
-	string exchangeRemove;
-	double lowerBound;
-	int coinReq;
-	double volReq;
-	bool debugMode;
-	bool timeMode;
-	int orderBookDepth;
+    int pathLen;                ///< Длина пути для арбитража.
+    string startCoin;           ///< Начальная криптовалюта.
+    double tradeAmt;            ///< Минимальная сумма сделки.
+    string exchangeRemove;      ///< Биржи, которые нужно исключить.
+    double lowerBound;          ///< Нижняя граница прибыльности.
+    int coinReq;                ///< Требуемое количество монет.
+    double volReq;              ///< Запрашиваемый объем.
+    bool debugMode;             ///< Флаг включения режима отладки.
+    bool timeMode;              ///< Флаг включения временного режима.
+    int orderBookDepth;         ///< Глубина книги ордеров.
 };
 
 
-/*
-*
-* Print method to print information about parsed
-* user info
-*
-*/
+/**
+ * @brief Печатает пользовательские настройки.
+ * @param userInput Структура `UserInput`, содержащая настройки пользователя.
+ */
 void printUserInput(UserInput userInput)
 {
 	cout << "Arb Path Length: " << userInput.pathLen << endl;
@@ -64,13 +65,11 @@ void printUserInput(UserInput userInput)
 	cout << "Order book depth: " << userInput.orderBookDepth << endl;
 }
 
+/**
+ * @brief Парсит пользовательские настройки из файла `user_settings.txt` и заполняет структуру `UserInput`.
+ * @param userInput Ссылка на структуру `UserInput`, куда будут записаны настройки.
+ */
 
-/*
-*
-* Parse user settings from a user_settings.txt file
-* and fill a UserInput struct
-*
-*/
 void parseUserSettings(UserInput &userInput)
 {
 	ifstream file("../../user_settings.txt");
@@ -101,6 +100,11 @@ void parseUserSettings(UserInput &userInput)
 	userInput.orderBookDepth = stoi(values["orderBookDepth"]);
 }
 
+/**
+ * @brief Преобразует строку с исключаемыми биржами в множество строк.
+ * @param removeExchanges Строка с названиями бирж, разделенными `/`.
+ * @return Множество строк с именами бирж.
+ */
 
 unordered_set<string> removeExchanges(string removeExchanges)
 {
@@ -123,13 +127,16 @@ unordered_set<string> removeExchanges(string removeExchanges)
 }
 
 
-/*
-*
-* main arbitrage running branch
-* - Facilitates all features of the framework
-* 	while minimizing the log information 
-*
-*/
+/**
+ * @brief Основной цикл работы для поиска арбитражных возможностей.
+ * @param userInput Настройки пользователя.
+ * @param g Граф торговых пар.
+ * @param symbolMap Карта символов и их соответствующих пар.
+ * @param seenSymbols Множество уникальных символов.
+ * @param feeMap Карта торговых комиссий.
+ * @param exchangeRemove Множество исключенных бирж.
+ */
+
 void mainArbOnly(UserInput &userInput, Graph &g, unordered_map<string, vector<string>> &symbolMap, 
 				unordered_set<string> &seenSymbols, unordered_map<string, double> &feeMap,
 				unordered_set<string> &exchangeRemove)
@@ -172,16 +179,23 @@ void mainArbOnly(UserInput &userInput, Graph &g, unordered_map<string, vector<st
 }
 
 
-/*
-*
-* debug arbitrage running branch
-* - Facilitates all features of the framework
-* 	for exactly one successful arbitrage find 
-* - Debug mode will print important arbitrage
-*  	log information such as graph size, arbitrage
-* 	path information, orderbook parsing, and 
-* 	ideal size finding
-*/
+/**
+ * @brief Режим отладки для поиска арбитража
+ * 
+ * Выполняет поиск одного успешного арбитража, выводя подробную информацию:
+ * - Размер графа
+ * - Найденный арбитражный путь
+ * - Разбор книги ордеров
+ * - Оптимальный объём сделок
+ * 
+ * @param userInput Пользовательские настройки
+ * @param g Граф финансовых инструментов
+ * @param symbolMap Торговые пары
+ * @param seenSymbols Обработанные символы
+ * @param feeMap Комиссии бирж
+ * @param exchangeRemove Исключённые биржи
+ */
+
 void mainDebugMode(UserInput &userInput, Graph &g, unordered_map<string, vector<string>> &symbolMap, 
 				unordered_set<string> &seenSymbols, unordered_map<string, double> &feeMap,
 				unordered_set<string> &exchangeRemove)
@@ -247,16 +261,23 @@ void mainDebugMode(UserInput &userInput, Graph &g, unordered_map<string, vector<
 }
 
 
-/*
-*
-* time arbitrage running branch
-* - Facilitates all features of the framework
-* 	to benchmark the time dominant operations
-* 	of the framework
-* - These operations include ticker data pulling,
-*	arbitrage finding, orderbook pulling, and
-*	ideal amount finding
-*/
+/**
+ * @brief Режим измерения времени для операций фреймворка
+ * 
+ * Выполняет тестирование ключевых времязатратных операций, таких как:
+ * - Получение данных о тикерах
+ * - Поиск арбитража
+ * - Разбор книги ордеров
+ * - Определение оптимального объёма сделок
+ * 
+ * @param userInput Пользовательские настройки
+ * @param g Граф финансовых инструментов
+ * @param symbolMap Торговые пары
+ * @param seenSymbols Обработанные символы
+ * @param feeMap Комиссии бирж
+ * @param exchangeRemove Исключённые биржи
+ */
+
 void mainTimeMode(UserInput &userInput, Graph &g, unordered_map<string, vector<string>> &symbolMap, 
 				unordered_set<string> &seenSymbols, unordered_map<string, double> &feeMap,
 				unordered_set<string> &exchangeRemove)
