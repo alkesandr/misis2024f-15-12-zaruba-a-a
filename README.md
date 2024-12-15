@@ -48,13 +48,3 @@
 
 ---
 
-
-## Установка всех библиотек
-
-Выполните следующие команды:
-
-```bash
-$ sudo apt-get install make cmake nlohmann-json3-dev curl python3 pip
-$ pip install requests bs4
-$ cd Framework
-$ bash shell_driver.sh
